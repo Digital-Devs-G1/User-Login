@@ -1,14 +1,24 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.DTOs.Users;
+using Application.Interfaces.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
 {
     public class LoginController : ControllerBase
     {
-        [HttpPost]
-        [Route("Login")]
-        public IActionResult Login()
+        private readonly IUserServices _userServices;
+
+        public LoginController(IUserServices userServices)
         {
-            IActionResult action = Ok();
+            _userServices = userServices;
+        }
+
+        [HttpPost]
+        [Route("Register")]
+        public IActionResult Login(RegisterUser registerUser)
+        {
+            string value = _userServices.RegisterUser(registerUser);
+            IActionResult action = Ok(value);
 
             return action;
         }

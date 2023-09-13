@@ -1,14 +1,10 @@
-using Infraestructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using Infraestructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-#region Context SQL Server
-builder.Services.AddDbContext<LoginDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionStringSQLServer"));
-});
+#region InjectionDependecy
+builder.Services.AddInfraestructureLayer(builder.Configuration);
 #endregion
 
 
