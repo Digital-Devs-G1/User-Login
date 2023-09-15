@@ -94,5 +94,20 @@ namespace Application.Services
                 Expiration = token.ValidTo
             };
         }
+
+        public List<GetUser> GetAllUsers()
+        {
+            IEnumerable<User> users = _userQuery.GetAllUsers();
+
+            List<GetUser> result = users.Select(u => new GetUser()
+            {
+                Id = u.Id,
+                Email = u.Email,
+                Password = u.Password,
+                Rol = u.Rol.Description
+            }).ToList();
+
+            return result;
+        }
     }
 }

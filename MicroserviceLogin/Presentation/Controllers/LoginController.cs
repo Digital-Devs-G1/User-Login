@@ -2,6 +2,7 @@
 using Application.DTOs.Token;
 using Application.DTOs.Users;
 using Application.Interfaces.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
@@ -50,5 +51,28 @@ namespace Presentation.Controllers
 
             return action;
         }
+
+        [HttpGet]
+        [Route("GetUsers")]
+        [Authorize]
+        public IActionResult GetAll()
+        {
+            IActionResult action;
+
+            List<GetUser> result = _userServices.GetAllUsers(); 
+
+            ResponseDto response = new ResponseDto()
+            {
+                IsSuccess = true,
+                Message = "Registrado correctamente",
+                Result = result
+            };
+
+            action = Ok(response);
+
+            return action;
+        }
+
+
     }
 }

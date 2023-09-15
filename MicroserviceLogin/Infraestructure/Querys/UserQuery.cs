@@ -14,6 +14,10 @@ namespace Infraestructure.Querys
             _context = context;
         }
 
+        public IEnumerable<User> GetAllUsers()
+        {
+            return _context.Users.Include(u => u.Rol).ToList();
+        }
 
         public User GetUserByEmail(string email)
         {

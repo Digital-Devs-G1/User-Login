@@ -7,5 +7,6 @@ namespace Application.Interfaces.Services
     {
         bool RegisterUser(RegisterUser user);
         TokenDto Login(LoginUser user);
+        List<GetUser> GetAllUsers();
     }
 }
