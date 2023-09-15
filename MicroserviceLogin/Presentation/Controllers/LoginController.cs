@@ -42,7 +42,7 @@ namespace Presentation.Controllers
             ResponseDto response = new ResponseDto()
             {
                 IsSuccess = true,
-                Message = "Registrado correctamente",
+                Message = "Login correcto.",
                 Result = token
             };
 
@@ -50,7 +50,5 @@ namespace Presentation.Controllers
 
             return action;
         }
-
-        
     }
 }

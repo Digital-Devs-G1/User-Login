@@ -6,8 +6,10 @@ using Application.Interfaces.Querys;
 using Application.Interfaces.Services;
 using Domain.Entities;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 
 namespace Application.Services
 {
@@ -61,11 +63,36 @@ namespace Application.Services
             return GenerateToken(user);
         }
 
+
         public TokenDto GenerateToken(User user)
         {
-            return new TokenDto() { };
-        }
 
-      
+            IConfigurationSection jwt = _configuration.GetSection("JWT");
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()),
+                new Claim("id" , user.Id.ToString()),
+                new Claim("email" , user.Email),
+                new Claim("rol" , user.Rol.Description)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.GetSection("Key").Value));
+            var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                _configuration["Jwt:Issuer"],
+                _configuration["Jwt:Audience"],
+                claims,
+                expires: DateTime.UtcNow.AddMinutes(60),
+                signingCredentials: signIn
+            );
+            
+            return new TokenDto() {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiration = token.ValidTo
+            };
+        }
     }
 }

@@ -17,7 +17,9 @@ namespace Infraestructure.Querys
 
         public User GetUserByEmail(string email)
         {
-            return _context.Users.FirstOrDefault(x => x.Email == email);
+            return _context.Users
+                .Include(u => u.Rol)
+                .FirstOrDefault(x => x.Email == email);
         }
     }
 }
