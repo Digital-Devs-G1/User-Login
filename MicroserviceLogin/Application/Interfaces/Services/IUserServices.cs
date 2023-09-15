@@ -6,5 +6,6 @@ namespace Application.Interfaces.Services
     public interface IUserServices
     {
         bool RegisterUser(RegisterUser user);
+        TokenDto Login(LoginUser user);
     }
 }

@@ -43,5 +43,29 @@ namespace Application.Services
 
             return _userCommand.RegisterUser(user) > 0;
         }
+
+        public TokenDto Login(LoginUser login)
+        {
+            User user = _userQuery.GetUserByEmail(login.Email);
+
+            if(user == null)
+                throw new LoginException("El usuario no coincide.");
+
+            string hash = user.Password;
+            string pass = login.Password;
+            bool isCorrect = BCrypt.Net.BCrypt.Verify(pass,hash);
+
+            if(!isCorrect)
+                throw new LoginException("Contraseña incorrecta.");
+
+            return GenerateToken(user);
+        }
+
+        public TokenDto GenerateToken(User user)
+        {
+            return new TokenDto() { };
+        }
+
+      
     }
 }
