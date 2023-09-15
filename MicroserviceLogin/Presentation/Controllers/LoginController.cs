@@ -1,4 +1,5 @@
-﻿using Application.DTOs.Users;
+﻿using Application.DTOs.Response;
+using Application.DTOs.Users;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,12 +16,20 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public IActionResult Login(RegisterUser registerUser)
+        public IActionResult Register([FromBody] RegisterUser registerUser)
         {
-            string value = _userServices.RegisterUser(registerUser);
-            IActionResult action = Ok(value);
+            bool value = _userServices.RegisterUser(registerUser);
+
+            ResponseDto response = new ResponseDto()
+            {
+                IsSuccess = value,
+                Message = "Registrado correctamente"
+            };
+
+            IActionResult action = Ok(response);
 
             return action;
         }
+
     }
 }

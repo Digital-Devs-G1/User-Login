@@ -1,43 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Application.DTOs.Token;
 using Application.DTOs.Users;
+using Application.Exceptions;
 using Application.Interfaces.Commands;
+using Application.Interfaces.Querys;
 using Application.Interfaces.Services;
 using Domain.Entities;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.JsonWebTokens;
+using System.Security.Claims;
 
 namespace Application.Services
 {
     public class UserServices : IUserServices
     {
         private readonly IUserCommand _userCommand;
-        public UserServices(IUserCommand userCommand)
+        private readonly IUserQuery _userQuery;
+        private readonly IConfiguration _configuration;
+        private readonly IRolQuery _rolQuery;
+
+        public UserServices(IUserCommand userCommand, IUserQuery userQuery, IConfiguration configuration, IRolQuery rolQuery)
         {
             _userCommand = userCommand;
+            _userQuery = userQuery;
+            _configuration = configuration;
+            _rolQuery = rolQuery;
         }
 
-        public void AuthenticateUser()
+        public bool RegisterUser(RegisterUser registerUser)
         {
+            if(_userQuery.GetUserByEmail(registerUser.Email) != null)
+                throw new LoginException("El mail ya fue registrado.");
 
+            if(!_rolQuery.ExistRol(registerUser.IdRol))
+                throw new LoginException("Id rol incorrecto.");
 
-
-
-        }
-
-        public string RegisterUser(RegisterUser registerUser)
-        {
-
-            // register user --> validate rol, encript pass
-            User user = new User() { 
+            User user = new User()
+            {
                 Email = registerUser.Email,
-                Password = BCrypt.Net.BCrypt.HashPassword(registerUser.Password)
+                Password = BCrypt.Net.BCrypt.HashPassword(registerUser.Password),
+                IdRol = registerUser.IdRol
             };
 
-            bool register = _userCommand.RegisterUser(user) > 0;
-
-            return register ? "Usuario registrado" : "Usuario no registrado";
+            return _userCommand.RegisterUser(user) > 0;
         }
     }
 }
