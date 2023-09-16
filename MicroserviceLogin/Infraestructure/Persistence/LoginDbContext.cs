@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Entities;
+using Infraestructure.Persistence.Configurations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infraestructure.Persistence
 {
@@ -9,9 +11,16 @@ namespace Infraestructure.Persistence
      
         }
 
+        public DbSet<User> Users { get; set; }
+        public DbSet<Rol> rols { get; set; }
+        public DbSet<UserLog> UserLogs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            
+            builder.ApplyConfiguration(new RolConfiguration());
+            builder.ApplyConfiguration(new UserConfiguration());
+            builder.ApplyConfiguration(new UserLogConfiguration());
         }
     }
 }
+
