@@ -28,7 +28,7 @@ namespace Application.Services
             _rolQuery = rolQuery;
         }
 
-        public bool RegisterUser(RegisterUser registerUser)
+        public async Task<bool> RegisterUser(RegisterUser registerUser)
         {
             if(_userQuery.GetUserByEmail(registerUser.Email) != null)
                 throw new LoginException("El mail ya fue registrado.");
@@ -43,7 +43,7 @@ namespace Application.Services
                 IdRol = registerUser.IdRol
             };
 
-            return _userCommand.RegisterUser(user) > 0;
+            return await _userCommand.RegisterUser(user) > 0;
         }
 
         public TokenDto Login(LoginUser login)

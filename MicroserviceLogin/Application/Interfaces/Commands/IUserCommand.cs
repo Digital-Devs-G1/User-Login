@@ -4,6 +4,6 @@ namespace Application.Interfaces.Commands
 {
     public interface IUserCommand
     {
-        int RegisterUser(User user);
+        Task<int> RegisterUser(User user);
     }
 }

@@ -11,11 +11,11 @@ namespace Infraestructure.Commands
         {
             _context = context;
         }
-        public int RegisterUser(User user)
+        public async Task<int>RegisterUser(User user)
         {
             _context.Add(user);
 
-            return _context.SaveChanges();
+            return await _context.SaveChangesAsync();
         }
     }
 }

@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Presentation.Controllers
 {
-
+    [Route("api/[controller]")]
+    [ApiController]
     public class LoginController : ControllerBase
     {
         private readonly IUserServices _userServices;
@@ -19,9 +20,9 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public IActionResult Register([FromBody] RegisterUser registerUser)
+        public async Task<IActionResult> Register([FromBody] RegisterUser registerUser)
         {
-            bool value = _userServices.RegisterUser(registerUser);
+            bool value = await _userServices.RegisterUser(registerUser);
 
             ResponseDto response = new ResponseDto()
             {
@@ -64,7 +65,7 @@ namespace Presentation.Controllers
             ResponseDto response = new ResponseDto()
             {
                 IsSuccess = true,
-                Message = "Registrado correctamente",
+                Message = "",
                 Result = result
             };
 
@@ -72,7 +73,5 @@ namespace Presentation.Controllers
 
             return action;
         }
-
-
     }
 }
