@@ -4,11 +4,13 @@ using Application.DTOs.Users;
 using Application.Interfaces.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Presentation.Handlers;
 
 namespace Presentation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [TypeFilter(typeof(ExceptionFilter))]
     public class LoginController : ControllerBase
     {
         private readonly IUserServices _userServices;
