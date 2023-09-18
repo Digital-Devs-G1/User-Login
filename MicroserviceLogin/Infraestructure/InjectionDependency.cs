@@ -25,6 +25,7 @@ namespace Infraestructure
             services.AddScoped<IUserQuery, UserQuery>();
             services.AddScoped<IUserCommand, UserCommand>();
             services.AddScoped<IRolQuery, RolQuery>();
+            services.AddScoped<IUserLogCommand, UserLogCommand>();
 
         }
     }

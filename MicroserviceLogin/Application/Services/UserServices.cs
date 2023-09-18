@@ -19,13 +19,15 @@ namespace Application.Services
         private readonly IUserQuery _userQuery;
         private readonly IConfiguration _configuration;
         private readonly IRolQuery _rolQuery;
+        private readonly IUserLogCommand _userLogCommand;
 
-        public UserServices(IUserCommand userCommand, IUserQuery userQuery, IConfiguration configuration, IRolQuery rolQuery)
+        public UserServices(IUserCommand userCommand, IUserQuery userQuery, IConfiguration configuration, IRolQuery rolQuery, IUserLogCommand logCommand)
         {
             _userCommand = userCommand;
             _userQuery = userQuery;
             _configuration = configuration;
             _rolQuery = rolQuery;
+            _userLogCommand = logCommand;
         }
 
         public async Task<bool> RegisterUser(RegisterUser registerUser)
@@ -60,9 +62,21 @@ namespace Application.Services
             if(!isCorrect)
                 throw new LoginException("Contraseña incorrecta.");
 
+             GenerateLog(user.Id);
+
             return GenerateToken(user);
         }
 
+        public async void GenerateLog(int id)
+        {
+            UserLog userLog = new UserLog()
+            {
+                Date = DateTime.Now,
+                IdUser = id,
+            };
+
+            await _userLogCommand.InsertUserLog(userLog);
+        }
 
         public TokenDto GenerateToken(User user)
         {
