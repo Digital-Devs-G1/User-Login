@@ -62,7 +62,6 @@ namespace Application.Services
             if(!isCorrect)
                 throw new LoginException("Contraseña incorrecta.");
 
-             GenerateLog(user.Id);
 
             return GenerateToken(user);
         }
