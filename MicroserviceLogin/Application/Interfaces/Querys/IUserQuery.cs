@@ -4,7 +4,7 @@ namespace Application.Interfaces.Querys
 {
     public interface IUserQuery
     {
-        User GetUserByEmail(string email);
-        IEnumerable<User> GetAllUsers();
+        Task<User> GetUserByEmail(string email);
+        Task<IEnumerable<User>> GetAllUsers();
     }
 }

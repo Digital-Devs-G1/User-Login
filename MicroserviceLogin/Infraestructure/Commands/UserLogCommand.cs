@@ -13,11 +13,11 @@ namespace Infraestructure.Commands
             _context = context;
         }
 
-        public async Task InsertUserLog(UserLog userLog)
+        public async Task<int> InsertUserLog(UserLog userLog)
         {
             _context.UserLogs.Add(userLog);
 
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
         }
     }
 }

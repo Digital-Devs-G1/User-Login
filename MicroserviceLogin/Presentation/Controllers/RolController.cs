@@ -27,7 +27,6 @@ namespace Presentation.Controllers
 
             ResponseDto response = new ResponseDto()
             {
-                IsSuccess = true,
                 Message = "",
                 Result = result
             };

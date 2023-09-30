@@ -14,12 +14,12 @@ namespace Infraestructure.Querys
             _context = context;
         }
 
-        public IEnumerable<User> GetAllUsers()
+        public async Task<IEnumerable<User>> GetAllUsers()
         {
-            return _context.Users.Include(u => u.Rol).ToList();
+            return  _context.Users.Include(u => u.Rol).ToList();
         }
 
-        public User GetUserByEmail(string email)
+        public async Task<User> GetUserByEmail(string email)
         {
             return _context.Users
                 .Include(u => u.Rol)

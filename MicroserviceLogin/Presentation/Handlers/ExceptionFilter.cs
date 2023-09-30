@@ -1,6 +1,5 @@
-﻿using Application.Exceptions;
-using Azure;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Application.DTOs.Response;
+using Application.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
@@ -28,11 +27,12 @@ namespace Presentation.Handlers
             
             context.ExceptionHandled = true;
             context.HttpContext.Response.StatusCode = (int)statusCode;
-            context.Result = new JsonResult(new
-            {
-                error = new[] { message },
-                stackTrace = context.Exception.StackTrace
-            });
+            context.Result = new JsonResult(
+                new ResponseDto() 
+                { 
+                    Message = message 
+                }
+            );
         }
 
     }

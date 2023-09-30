@@ -4,6 +4,6 @@ namespace Application.Interfaces.Commands
 {
     public interface IUserLogCommand
     {
-        Task InsertUserLog(UserLog userLog);
+        Task<int> InsertUserLog(UserLog userLog);
     }
 }

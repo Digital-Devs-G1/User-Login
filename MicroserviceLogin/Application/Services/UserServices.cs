@@ -48,9 +48,9 @@ namespace Application.Services
             return await _userCommand.RegisterUser(user) > 0;
         }
 
-        public TokenDto Login(LoginUser login)
+        public async Task<TokenDto> Login(LoginUser login)
         {
-            User user = _userQuery.GetUserByEmail(login.Email);
+            User user = await _userQuery.GetUserByEmail(login.Email);
 
             if(user == null)
                 throw new LoginException("El usuario no coincide.");
@@ -62,11 +62,20 @@ namespace Application.Services
             if(!isCorrect)
                 throw new LoginException("Contraseña incorrecta.");
 
+            try
+            {
+                await GenerateLog(user.Id);
+            }
+            catch(Exception)
+            {
+                return GenerateToken(user);
+            }
+
 
             return GenerateToken(user);
         }
 
-        public async void GenerateLog(int id)
+        public async Task<bool> GenerateLog(int id)
         {
             UserLog userLog = new UserLog()
             {
@@ -74,7 +83,7 @@ namespace Application.Services
                 IdUser = id,
             };
 
-            await _userLogCommand.InsertUserLog(userLog);
+            return await _userLogCommand.InsertUserLog(userLog) > 0;
         }
 
         public TokenDto GenerateToken(User user)
@@ -108,9 +117,9 @@ namespace Application.Services
             };
         }
 
-        public List<GetUser> GetAllUsers()
+        public async Task<List<GetUser>> GetAllUsers()
         {
-            IEnumerable<User> users = _userQuery.GetAllUsers();
+            IEnumerable<User> users = await _userQuery.GetAllUsers();
 
             List<GetUser> result = users.Select(u => new GetUser()
             {

@@ -6,7 +6,7 @@ namespace Application.Interfaces.Services
     public interface IUserServices
     {
         Task<bool> RegisterUser(RegisterUser user);
-        TokenDto Login(LoginUser user);
-        List<GetUser> GetAllUsers();
+        Task<TokenDto> Login(LoginUser user);
+        Task<List<GetUser>> GetAllUsers();
     }
 }

@@ -28,52 +28,41 @@ namespace Presentation.Controllers
 
             ResponseDto response = new ResponseDto()
             {
-                IsSuccess = value,
                 Message = "Registrado correctamente"
             };
 
-            IActionResult action = Ok(response);
-
-            return action;
+            return StatusCode(StatusCodes.Status201Created, response);
         }
 
         [HttpPost]
         [Route("Login")]
-        public IActionResult Login([FromBody] LoginUser loginUser)
+        public async Task<IActionResult> Login([FromBody] LoginUser loginUser)
         {
-            TokenDto token = _userServices.Login(loginUser);
+            TokenDto token =  await _userServices.Login(loginUser);
 
             ResponseDto response = new ResponseDto()
             {
-                IsSuccess = true,
                 Message = "Login correcto.",
                 Result = token
             };
 
-            IActionResult action = Ok(response);
-
-            return action;
+            return Ok(response); 
         }
 
         [HttpGet]
         [Route("GetUsers")]
         [Authorize]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            IActionResult action;
-
-            List<GetUser> result = _userServices.GetAllUsers(); 
+            List<GetUser> result = await _userServices.GetAllUsers(); 
 
             ResponseDto response = new ResponseDto()
             {
-                IsSuccess = true,
                 Message = "",
                 Result = result
             };
 
-            action = Ok(response);
-
-            return action;
+            return Ok(response); 
         }
     }
 }
