@@ -2,8 +2,11 @@
 using Application.DTOs.Token;
 using Application.DTOs.Users;
 using Application.Interfaces.Services;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Presentation.Handlers;
 
 namespace Presentation.Controllers
@@ -22,13 +25,26 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterUser registerUser)
+        public async Task<IActionResult> Register([FromBody] RegisterUser registerUser, [FromServices] IValidator<RegisterUser> validator)
         {
+            ValidationResult validationResult = validator.Validate(registerUser);
+
+            if(!validationResult.IsValid) {
+
+                var modelStateDiccionary = new ModelStateDictionary();
+                foreach(ValidationFailure item in validationResult.Errors)
+                {
+                    modelStateDiccionary.AddModelError(item.PropertyName, item.ErrorMessage);
+                }
+
+                return BadRequest(modelStateDiccionary);
+            }
+
             bool value = await _userServices.RegisterUser(registerUser);
 
             ResponseDto response = new ResponseDto()
             {
-                Message = "Registrado correctamente"
+                Result = value
             };
 
             return StatusCode(StatusCodes.Status201Created, response);
@@ -42,7 +58,6 @@ namespace Presentation.Controllers
 
             ResponseDto response = new ResponseDto()
             {
-                Message = "Login correcto.",
                 Result = token
             };
 
@@ -58,7 +73,6 @@ namespace Presentation.Controllers
 
             ResponseDto response = new ResponseDto()
             {
-                Message = "",
                 Result = result
             };
 

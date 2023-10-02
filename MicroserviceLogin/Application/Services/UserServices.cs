@@ -125,7 +125,6 @@ namespace Application.Services
             {
                 Id = u.Id,
                 Email = u.Email,
-                Password = u.Password,
                 Rol = u.Rol.Description
             }).ToList();
 

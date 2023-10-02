@@ -1,7 +1,10 @@
+using Application.DTOs.Users;
+using FluentValidation;
 using Infraestructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Presentation.Validators;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 #region InjectionDependecy
 builder.Services.AddInfraestructureLayer(builder.Configuration);
+builder.Services.AddScoped<IValidator<RegisterUser>, RegisterUserValidator>();
 #endregion
 
 

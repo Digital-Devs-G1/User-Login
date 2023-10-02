@@ -11,26 +11,26 @@ namespace Presentation.Handlers
         public override void OnException(ExceptionContext context)
         {
             var statusCode = HttpStatusCode.InternalServerError;
-            string message = string.Empty;
+            List<string> message = new List<string>();
 
             if(context.Exception is LoginException)
             {
                 statusCode = HttpStatusCode.BadRequest;
-                message = context.Exception.Message;
+                message.Add(context.Exception.Message);
 
             }
             else
             {
                 statusCode = HttpStatusCode.InternalServerError;
-                message = "Ha ocurrido un error interno.";
+                message.Add("Ha ocurrido un error interno.");
             }
             
             context.ExceptionHandled = true;
             context.HttpContext.Response.StatusCode = (int)statusCode;
             context.Result = new JsonResult(
-                new ResponseDto() 
+                new MessageResponse() 
                 { 
-                    Message = message 
+                    Messages = message
                 }
             );
         }
