@@ -23,6 +23,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Microservice - Login"
+    });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
     {
