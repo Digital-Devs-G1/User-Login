@@ -32,10 +32,10 @@ namespace Application.Services
 
         public async Task<bool> RegisterUser(RegisterUser registerUser)
         {
-            if(_userQuery.GetUserByEmail(registerUser.Email) != null)
+            if (await _userQuery.GetUserByEmail(registerUser.Email) != null)
                 throw new LoginException("El mail ya fue registrado.");
 
-            if(!_rolQuery.ExistRol(registerUser.IdRol))
+            if(! _rolQuery.ExistRol(registerUser.IdRol))
                 throw new LoginException("Id rol incorrecto.");
 
             User user = new User()
