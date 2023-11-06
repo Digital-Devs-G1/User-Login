@@ -1,10 +1,15 @@
 ﻿using Application.Interfaces.Commands;
+using Application.Interfaces.IMicroservices.Generic;
+using Application.Interfaces.IMicroservicesClient;
 using Application.Interfaces.Querys;
 using Application.Interfaces.Services;
 using Application.Services;
 using Infraestructure.Commands;
 using Infraestructure.Persistence;
 using Infraestructure.Querys;
+using Infrastructure.MicroservicesClient;
+using Infrastructure.MicroservicesClient.GenericClient;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +31,10 @@ namespace Infraestructure
             services.AddScoped<IUserCommand, UserCommand>();
             services.AddScoped<IRolQuery, RolQuery>();
             services.AddScoped<IUserLogCommand, UserLogCommand>();
-
+            services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IGetMicroserviceClient, GetMicroserviceClient>();
+            services.AddTransient<IPostMicroserviceClient, PostMicroservicClient>();
+            services.AddScoped<ICreateEmployeeClient, CreateEmployeeClient>();
         }
     }
 }

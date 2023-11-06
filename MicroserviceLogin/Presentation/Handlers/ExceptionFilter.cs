@@ -13,11 +13,16 @@ namespace Presentation.Handlers
             var statusCode = HttpStatusCode.InternalServerError;
             List<string> message = new List<string>();
 
-            if(context.Exception is LoginException)
+            if (context.Exception is LoginException)
             {
                 statusCode = HttpStatusCode.BadRequest;
                 message.Add(context.Exception.Message);
 
+            }
+            else if (context.Exception is UnprocesableContentException)
+            {
+                statusCode = HttpStatusCode.UnprocessableEntity;
+                message.Add(context.Exception.Message);
             }
             else
             {

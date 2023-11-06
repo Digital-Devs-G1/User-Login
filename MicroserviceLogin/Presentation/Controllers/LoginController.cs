@@ -25,6 +25,7 @@ namespace Presentation.Controllers
 
         [HttpPost]
         [Route("Register")]
+        [Authorize]
         public async Task<IActionResult> Register([FromBody] RegisterUser registerUser, [FromServices] IValidator<RegisterUser> validator)
         {
             ValidationResult validationResult = validator.Validate(registerUser);
@@ -40,14 +41,9 @@ namespace Presentation.Controllers
                 return BadRequest(modelStateDiccionary);
             }
 
-            bool value = await _userServices.RegisterUser(registerUser);
+            await _userServices.RegisterUser(registerUser);
 
-            ResponseDto response = new ResponseDto()
-            {
-                Result = value
-            };
-
-            return StatusCode(StatusCodes.Status201Created, response);
+            return StatusCode(StatusCodes.Status201Created);
         }
 
         [HttpPost]

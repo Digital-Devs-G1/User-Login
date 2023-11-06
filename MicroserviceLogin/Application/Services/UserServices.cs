@@ -1,7 +1,10 @@
-﻿using Application.DTOs.Token;
+﻿using Application.DTO.Request;
+using Application.DTOs.Token;
 using Application.DTOs.Users;
 using Application.Exceptions;
 using Application.Interfaces.Commands;
+using Application.Interfaces.IMicroservices.Generic;
+using Application.Interfaces.IMicroservicesClient;
 using Application.Interfaces.Querys;
 using Application.Interfaces.Services;
 using Domain.Entities;
@@ -20,17 +23,19 @@ namespace Application.Services
         private readonly IConfiguration _configuration;
         private readonly IRolQuery _rolQuery;
         private readonly IUserLogCommand _userLogCommand;
+        private readonly ICreateEmployeeClient _createEmployeeClient;
 
-        public UserServices(IUserCommand userCommand, IUserQuery userQuery, IConfiguration configuration, IRolQuery rolQuery, IUserLogCommand logCommand)
+        public UserServices(IUserCommand userCommand, IUserQuery userQuery, IConfiguration configuration, IRolQuery rolQuery, IUserLogCommand logCommand, ICreateEmployeeClient createEmployeeClient)
         {
             _userCommand = userCommand;
             _userQuery = userQuery;
             _configuration = configuration;
             _rolQuery = rolQuery;
             _userLogCommand = logCommand;
+            _createEmployeeClient = createEmployeeClient;
         }
 
-        public async Task<bool> RegisterUser(RegisterUser registerUser)
+        public async Task RegisterUser(RegisterUser registerUser)
         {
             if (await _userQuery.GetUserByEmail(registerUser.Email) != null)
                 throw new LoginException("El mail ya fue registrado.");
@@ -45,7 +50,28 @@ namespace Application.Services
                 IdRol = registerUser.IdRol
             };
 
-            return await _userCommand.RegisterUser(user) > 0;
+            var ok = await _userCommand.RegisterUser(user) > 0;
+            if ( ! ok )
+                throw new UnprocesableContentException("No se pudo registrar el usuario");
+
+            var request = new EmployeeRequest()
+            {
+                Id = user.Id,
+                FirsName = registerUser.FirsName,
+                LastName = registerUser.LastName,
+                DepartmentId = registerUser.DepartmentId,
+                PositionId = registerUser.PositionId,
+                SuperiorId = registerUser.SuperiorId
+            };
+            try
+            {
+                await _createEmployeeClient.CreateEmployee(request);
+            }
+            catch (Exception ex) 
+            {
+                // Delete user
+                throw new UnprocesableContentException(ex.Message);
+            }
         }
 
         public async Task<TokenDto> Login(LoginUser login)
