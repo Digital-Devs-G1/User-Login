@@ -37,6 +37,8 @@ namespace Application.Services
 
         public async Task RegisterUser(RegisterUser registerUser)
         {
+            if (registerUser.SuperiorId != null && registerUser.SuperiorId < 1 )
+                throw new LoginException("Formato del id del superior incorrecto");
             if (await _userQuery.GetUserByEmail(registerUser.Email) != null)
                 throw new LoginException("El mail ya fue registrado.");
 
@@ -69,7 +71,7 @@ namespace Application.Services
             }
             catch (Exception ex) 
             {
-                // Delete user
+                await _userCommand.RemoveUser(user);
                 throw new UnprocesableContentException(ex.Message);
             }
         }

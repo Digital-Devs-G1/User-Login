@@ -11,9 +11,16 @@ namespace Infraestructure.Commands
         {
             _context = context;
         }
-        public async Task<int>RegisterUser(User user)
+        public async Task<int> RegisterUser(User user)
         {
             _context.Add(user);
+
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> RemoveUser(User user)
+        {
+            _context.Remove(user);
 
             return await _context.SaveChangesAsync();
         }
