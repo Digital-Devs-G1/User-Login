@@ -11,7 +11,7 @@ using Presentation.Handlers;
 
 namespace Presentation.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     [TypeFilter(typeof(ExceptionFilter))]
     public class LoginController : ControllerBase
