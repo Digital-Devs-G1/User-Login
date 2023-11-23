@@ -1,5 +1,6 @@
 ﻿using Application.Exceptions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.MicroservicesClient.GenericClient
 {
@@ -16,15 +17,18 @@ namespace Infrastructure.MicroservicesClient.GenericClient
         protected async Task<HttpResponseMessage> SendRequest(string url)
         {
             var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"];
-            
-            using (HttpClient client = new HttpClient())
+
+            using(HttpClient client = new HttpClient())
             {
                 try
                 {
-                    client.DefaultRequestHeaders.Add("Authorization", token.ToString());
+                    if(!token.IsNullOrEmpty())
+                    {
+                        client.DefaultRequestHeaders.Add("Authorization", token.ToString());
+                    }
                     return await HttpMethod(client, url);
                 }
-                catch (Exception ex)
+                catch(Exception ex)
                 {
                     throw new MicroserviceComunicationException(
                         $"Url: {url}. Error: {ex.Message}"

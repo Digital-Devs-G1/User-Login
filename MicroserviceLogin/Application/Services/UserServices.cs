@@ -1,9 +1,9 @@
 ﻿using Application.DTO.Request;
+using Application.DTO.Response.Microservices;
 using Application.DTOs.Token;
 using Application.DTOs.Users;
 using Application.Exceptions;
 using Application.Interfaces.Commands;
-using Application.Interfaces.IMicroservices.Generic;
 using Application.Interfaces.IMicroservicesClient;
 using Application.Interfaces.Querys;
 using Application.Interfaces.Services;
@@ -24,8 +24,9 @@ namespace Application.Services
         private readonly IRolQuery _rolQuery;
         private readonly IUserLogCommand _userLogCommand;
         private readonly ICreateEmployeeClient _createEmployeeClient;
+        private readonly IGetEmployeeClient _getEmployeeClient;
 
-        public UserServices(IUserCommand userCommand, IUserQuery userQuery, IConfiguration configuration, IRolQuery rolQuery, IUserLogCommand logCommand, ICreateEmployeeClient createEmployeeClient)
+        public UserServices(IUserCommand userCommand, IUserQuery userQuery, IConfiguration configuration, IRolQuery rolQuery, IUserLogCommand logCommand, ICreateEmployeeClient createEmployeeClient, IGetEmployeeClient employeeClient)
         {
             _userCommand = userCommand;
             _userQuery = userQuery;
@@ -33,16 +34,18 @@ namespace Application.Services
             _rolQuery = rolQuery;
             _userLogCommand = logCommand;
             _createEmployeeClient = createEmployeeClient;
+            _getEmployeeClient = employeeClient;
         }
 
         public async Task RegisterUser(RegisterUser registerUser)
         {
-            if (registerUser.SuperiorId != null && registerUser.SuperiorId < 1 )
+            if(registerUser.SuperiorId != null && registerUser.SuperiorId < 1)
                 throw new LoginException("Formato del id del superior incorrecto");
-            if (await _userQuery.GetUserByEmail(registerUser.Email) != null)
+
+            if(await _userQuery.GetUserByEmail(registerUser.Email) != null)
                 throw new LoginException("El mail ya fue registrado.");
 
-            if(! _rolQuery.ExistRol(registerUser.IdRol))
+            if(!_rolQuery.ExistRol(registerUser.IdRol))
                 throw new LoginException("Id rol incorrecto.");
 
             User user = new User()
@@ -53,7 +56,7 @@ namespace Application.Services
             };
 
             var ok = await _userCommand.RegisterUser(user) > 0;
-            if ( ! ok )
+            if(!ok)
                 throw new UnprocesableContentException("No se pudo registrar el usuario");
 
             var request = new EmployeeRequest()
@@ -69,7 +72,7 @@ namespace Application.Services
             {
                 await _createEmployeeClient.CreateEmployee(request);
             }
-            catch (Exception ex) 
+            catch(Exception ex)
             {
                 await _userCommand.RemoveUser(user);
                 throw new UnprocesableContentException(ex.Message);
@@ -85,22 +88,24 @@ namespace Application.Services
 
             string hash = user.Password;
             string pass = login.Password;
-            bool isCorrect = BCrypt.Net.BCrypt.Verify(pass,hash);
+            bool isCorrect = BCrypt.Net.BCrypt.Verify(pass, hash);
 
             if(!isCorrect)
                 throw new LoginException("Contraseña incorrecta.");
 
+            EmployeeResponse employee;
             try
             {
+                employee = await _getEmployeeClient.GetEmployee(user.Id);
                 await GenerateLog(user.Id);
             }
-            catch(Exception)
+            catch(Exception ex)
             {
-                return GenerateToken(user);
+                throw new UnprocesableContentException(ex.Message);
             }
 
 
-            return GenerateToken(user);
+            return GenerateToken(user, employee);
         }
 
         public async Task<bool> GenerateLog(int id)
@@ -114,7 +119,7 @@ namespace Application.Services
             return await _userLogCommand.InsertUserLog(userLog) > 0;
         }
 
-        public TokenDto GenerateToken(User user)
+        public TokenDto GenerateToken(User user, EmployeeResponse employee)
         {
 
             IConfigurationSection jwt = _configuration.GetSection("JWT");
@@ -125,7 +130,9 @@ namespace Application.Services
                 new Claim(JwtRegisteredClaimNames.Iat, DateTime.Now.ToString()),
                 new Claim("id" , user.Id.ToString()),
                 new Claim("email" , user.Email),
-                new Claim("rol" , user.Rol.Description)
+                new Claim("rol" , user.Rol.Description),
+                new Claim("dep" , employee.DepartmentId.ToString()),
+                new Claim("company" , employee.CompanyId.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.GetSection("Key").Value));
@@ -138,8 +145,9 @@ namespace Application.Services
                 expires: DateTime.UtcNow.AddMinutes(60),
                 signingCredentials: signIn
             );
-            
-            return new TokenDto() {
+
+            return new TokenDto()
+            {
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 Expiration = token.ValidTo
             };

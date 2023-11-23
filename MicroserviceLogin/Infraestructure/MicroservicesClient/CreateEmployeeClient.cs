@@ -1,12 +1,8 @@
-﻿
-using Application.DTO.Request;
-using Application.DTO.Response.Microservices;
+﻿using Application.DTO.Request;
 using Application.Exceptions;
 using Application.Interfaces.IMicroservices.Generic;
 using Application.Interfaces.IMicroservicesClient;
 using Newtonsoft.Json;
-using System.Net.Http.Headers;
-using System.Text.Json;
 
 namespace Infrastructure.MicroservicesClient
 {
@@ -25,7 +21,7 @@ namespace Infrastructure.MicroservicesClient
             string json = JsonConvert.SerializeObject(request);
             HttpResponseMessage response = await _postClient.Post(url, json);
 
-            if (!response.IsSuccessStatusCode)
+            if(!response.IsSuccessStatusCode)
             {
                 json = await response.Content.ReadAsStringAsync();
                 try
@@ -35,7 +31,7 @@ namespace Infrastructure.MicroservicesClient
                         "Code " + response.StatusCode.ToString() + ": " + json
                     );
                 }
-                catch (Exception)
+                catch(Exception)
                 {
                     throw new UnprocesableContentException("Error en el formate de respuesta del microservico con statusCode " + response.StatusCode);
                 }

@@ -5,6 +5,7 @@ using Application.Interfaces.Querys;
 using Application.Interfaces.Services;
 using Application.Services;
 using Infraestructure.Commands;
+using Infraestructure.MicroservicesClient;
 using Infraestructure.Persistence;
 using Infraestructure.Querys;
 using Infrastructure.MicroservicesClient;
@@ -35,6 +36,7 @@ namespace Infraestructure
             services.AddTransient<IGetMicroserviceClient, GetMicroserviceClient>();
             services.AddTransient<IPostMicroserviceClient, PostMicroservicClient>();
             services.AddScoped<ICreateEmployeeClient, CreateEmployeeClient>();
+            services.AddScoped<IGetEmployeeClient, GetEmployeeClient>();
         }
     }
 }
