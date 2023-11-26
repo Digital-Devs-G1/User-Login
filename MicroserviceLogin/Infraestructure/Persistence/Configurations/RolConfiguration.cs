@@ -24,6 +24,17 @@ namespace Infraestructure.Persistence.Configurations
                 {
                     Id = 2,
                     Description = "User"
+                },
+                new Rol
+                {
+                    Id = 3,
+                    Description = "SuperAdmin"
+
+                },
+                new Rol
+                {
+                    Id = 4,
+                    Description = "Approver"
                 });
         }
     }

@@ -10,7 +10,7 @@ namespace Infraestructure.Querys
 
         public RolQuery(LoginDbContext context)
         {
-           _context = context;
+            _context = context;
         }
 
         public bool ExistRol(int id)
@@ -20,7 +20,7 @@ namespace Infraestructure.Querys
 
         public IEnumerable<Rol> GetAllRoles()
         {
-            return _context.rols.ToList();
+            return _context.rols.Where(x => x.Description != "SuperAdmin").ToList();
         }
     }
 }
