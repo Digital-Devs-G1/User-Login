@@ -133,7 +133,8 @@ namespace Application.Services
                 new Claim("email" , user.Email),
                 new Claim("rol" , user.Rol.Description),
                 new Claim("dep" , employee.DepartmentId.ToString()),
-                new Claim("company" , employee.CompanyId.ToString())
+                new Claim("company" , employee.CompanyId.ToString()),
+                new Claim("isApprover" , employee.IsApprover.ToString()),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.GetSection("Key").Value));
