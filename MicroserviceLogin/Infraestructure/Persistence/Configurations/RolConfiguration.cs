@@ -30,11 +30,6 @@ namespace Infraestructure.Persistence.Configurations
                     Id = 3,
                     Description = "SuperAdmin"
 
-                },
-                new Rol
-                {
-                    Id = 4,
-                    Description = "Approver"
                 });
         }
     }
