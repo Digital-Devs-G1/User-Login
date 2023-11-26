@@ -66,7 +66,8 @@ namespace Application.Services
                 LastName = registerUser.LastName,
                 DepartmentId = registerUser.DepartmentId,
                 PositionId = registerUser.PositionId,
-                SuperiorId = registerUser.SuperiorId
+                SuperiorId = registerUser.SuperiorId,
+                IsApprover = registerUser.IsApprover
             };
             try
             {
